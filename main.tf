@@ -33,7 +33,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority.0.data)
   token                  = data.external.aws_iam_authenticator.result.token
   load_config_file       = false
-  version                = "~> 1.13"
 }
 
 resource "kubernetes_service_account" "efs" {
