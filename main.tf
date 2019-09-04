@@ -27,17 +27,13 @@ resource "aws_efs_mount_target" "this" {
   subnet_id      = tolist(data.aws_subnet_ids.this.ids)[count.index]
 }
 
-data "aws_eks_cluster" "this" {
-  name = var.cluster_name
-}
-
 data "external" "aws_iam_authenticator" {
   program = ["sh", "-c", "aws-iam-authenticator token -i ${var.cluster_name} | jq -r -c .status"]
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority.0.data)
+  host                   = module.eks.endpoint
+  cluster_ca_certificate = base64decode(module.eks.certificate)
   token                  = data.external.aws_iam_authenticator.result.token
   load_config_file       = false
 }
