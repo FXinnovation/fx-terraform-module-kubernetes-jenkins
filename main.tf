@@ -1,3 +1,10 @@
+module "eks" {
+  source = "git::ssh://git@scm.dazzlingwrench.fxinnovation.com:2222/fxinnovation-public/terraform-module-aws-eks.git?ref=0.1.0"
+
+  cluster_name = var.cluster_name
+  keypair-name = var.keypair-name
+}
+
 data "aws_vpc" "this" {
   default = true
 }

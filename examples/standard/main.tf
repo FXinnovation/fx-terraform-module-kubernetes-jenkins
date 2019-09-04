@@ -8,7 +8,7 @@ provider "aws" {
 module "standard" {
   source = "../../"
 
-  account_id   = "203977111394"
   cluster_name = "terraform-jenkins"
   secret       = "mybeautifulsecret"
+  keypair-name = "dglantenay"
 }

@@ -3,12 +3,12 @@ variable "region" {
   default     = "us-east-2"
 }
 
-variable "account_id" {
-  description = "ID of the aws account"
+variable "cluster_name" {
+  description = "Name of the eks cluster"
   type        = "string"
 }
 
-variable "cluster_name" {
-  description = "Name of the eks cluster"
+variable "keypair-name" {
+  description = "Name of the ssh key pair to deploy on worker nodes"
   type        = "string"
 }
