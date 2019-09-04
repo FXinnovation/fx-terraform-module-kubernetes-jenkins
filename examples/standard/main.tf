@@ -9,6 +9,5 @@ module "standard" {
   source = "../../"
 
   cluster_name = "terraform-jenkins"
-  secret       = "mybeautifulsecret"
   keypair-name = "dglantenay"
 }
