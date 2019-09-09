@@ -10,11 +10,11 @@ provider "random" {
 }
 
 data "aws_eks_cluster_auth" "this" {
-  name = "terraform-jenkins-qbgpjpan"
+  name = "fxinnovation-validation-cluster"
 }
 
 data "aws_eks_cluster" "this" {
-  name = "terraform-jenkins-qbgpjpan"
+  name = "fxinnovation-validation-cluster"
 }
 
 provider "kubernetes" {
@@ -32,7 +32,7 @@ resource "random_string" "this" {
 }
 
 data "aws_efs_file_system" "this" {
-  file_system_id = "fs-cd6f4cb4"
+  file_system_id = "fs-38785a41"
 }
 
 data "aws_vpc" "default" {
@@ -46,7 +46,7 @@ data "aws_subnet_ids" "this" {
 module "standard" {
   source = "../../"
 
-  cluster_name            = "terraform-jenkins-qbgpjpan"
+  cluster_name            = "fxinnovation-validation-cluster"
   storage_class           = "aws-efs"
   jenkins_data_size       = "1Gi"
   jenkins_role_name       = "jenkins-${random_string.this.result}"
