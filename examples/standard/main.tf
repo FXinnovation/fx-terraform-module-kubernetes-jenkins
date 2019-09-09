@@ -32,7 +32,7 @@ resource "random_string" "this" {
 }
 
 data "aws_efs_file_system" "this" {
-  file_system_id = "fs-38785a41"
+  file_system_id = "fs-41426038"
 }
 
 data "aws_vpc" "default" {
