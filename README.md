@@ -29,9 +29,9 @@ Terraform module to deploy jenkins on kubernetes
 
 | Name | Description |
 |------|-------------|
-| ingressaddr |  |
 | service\_discovery\_id |  |
 | service\_discovery\_port |  |
+| service\_ingress\_addr |  |
 | service\_ui\_id |  |
 | service\_ui\_port |  |
 
