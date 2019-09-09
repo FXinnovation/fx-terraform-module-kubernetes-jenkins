@@ -1,7 +1,3 @@
-output "ingressaddr" {
-  value = data.external.ingress_public_ip.result
-}
-
 output "service_ui_id" {
   value = kubernetes_service.jenkins-ui.id
 }
@@ -16,4 +12,8 @@ output "service_discovery_id" {
 
 output "service_discovery_port" {
   value = kubernetes_service.jenkins-discovery.spec[0].port
+}
+
+output "service_ingress_addr" {
+  value = data.external.ingress_public_ip.result.extvar
 }
