@@ -1,5 +1,5 @@
 provider "aws" {
-  version    = "~> 2.7.0"
+  version    = "~> 2.27.0"
   region     = "us-east-2"
   access_key = "${var.access_key}"
   secret_key = "${var.secret_key}"
@@ -22,6 +22,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.this.token
   load_config_file       = false
+  version                = "~> 1.9"
 }
 
 resource "random_string" "this" {
@@ -29,10 +30,6 @@ resource "random_string" "this" {
   special = false
   upper   = false
   number  = false
-}
-
-data "aws_efs_file_system" "this" {
-  file_system_id = "fs-41426038"
 }
 
 data "aws_vpc" "default" {
@@ -46,21 +43,16 @@ data "aws_subnet_ids" "this" {
 module "standard" {
   source = "../../"
 
-  cluster_name            = "fxinnovation-validation-cluster"
-  storage_class           = "aws-efs"
-  jenkins_data_size       = "1Gi"
-  jenkins_role_name       = "jenkins-${random_string.this.result}"
-  efs_dns_name            = data.aws_efs_file_system.this.dns_name
-  efs_id                  = data.aws_efs_file_system.this.id
-  jenkins_service_account = "jenkins-${random_string.this.result}"
-  aws_subnet_ids          = data.aws_subnet_ids.this.ids
-  jenkins_role_binding    = "jenkins-${random_string.this.result}"
-  jenkins_deployment_name = "jenkins-${random_string.this.result}"
-  jenkins_claim_name      = "efs-${random_string.this.result}"
-  jenkins_ingress_name    = "jenkins-${random_string.this.result}"
-  region                  = "us-east-2"
-  efs_enabled             = "true"
-  jenkins_ingress_annotations = {
+  cluster_name         = "fxinnovation-validation-cluster"
+  storage_class        = "aws-efs"
+  storage_size         = "1Gi"
+  role_name            = "jenkins-${random_string.this.result}"
+  service_account_name = "jenkins-${random_string.this.result}"
+  role_binding_name    = "jenkins-${random_string.this.result}"
+  deployment_name      = "jenkins-${random_string.this.result}"
+  claim_name           = "efs-${random_string.this.result}"
+  ingress_name         = "jenkins-${random_string.this.result}"
+  ingress_annotations = {
     "kubernetes.io/ingress.class"                = "alb"
     "alb.ingress.kubernetes.io/scheme"           = "internal"
     "alb.ingress.kubernetes.io/subnets"          = join(", ", data.aws_subnet_ids.this.ids)
@@ -68,7 +60,7 @@ module "standard" {
     "alb.ingress.kubernetes.io/healthcheck-path" = "/"
     "alb.ingress.kubernetes.io/success-codes"    = "200,404"
   }
-  jenkins_role_rules = [
+  role_rules = [
     {
       api_groups = ""
       resources  = "roles"
@@ -80,4 +72,7 @@ module "standard" {
       verbs      = "get"
     }
   ]
+  container_name         = "jenkins-master-${random_string.this.result}"
+  service_discovery_name = "jenkins-discovery-${random_string.this.result}"
+  service_ui_name        = "jenkins-ui-${random_string.this.result}"
 }

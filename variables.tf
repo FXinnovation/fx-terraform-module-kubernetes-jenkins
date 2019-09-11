@@ -1,25 +1,5 @@
-variable "region" {
-  description = "Aws region for deploying the module"
-  type        = "string"
-}
-
 variable "cluster_name" {
   description = "Name of the eks cluster"
-  type        = "string"
-}
-
-variable "efs_enabled" {
-  description = "Boolean that indicates if efs will be use by the cluster"
-  default     = "false"
-}
-
-variable "efs_id" {
-  description = "ID of the efs file system to use for pvc"
-  type        = "string"
-}
-
-variable "efs_dns_name" {
-  description = "DNS name to access efs"
   type        = "string"
 }
 
@@ -28,57 +8,72 @@ variable "storage_class" {
   type        = "string"
 }
 
-variable "jenkins_data_size" {
+variable "storage_size" {
   description = "Size of the persistent volume used to store jenkins data"
   type        = "string"
 }
 
-variable "jenkins_role_name" {
+variable "role_name" {
   description = "Name of the jenkins role"
   type        = "string"
 }
 
-variable "jenkins_service_account" {
+variable "service_account_name" {
   description = "Name of the service account that run jenkins"
   type        = "string"
 }
 
-variable "jenkins_role_binding" {
+variable "role_binding_name" {
   description = "Name of the role binding for jenkins"
   type        = "string"
 }
 
-variable "jenkins_namespace" {
+variable "namespace" {
   description = "Name of the namespace where jenkins is deployed"
   default     = "default"
 }
 
-variable "aws_subnet_ids" {
-  description = "IDs of the subnet where ingres is deployed"
+variable "role_rules" {
+  description = "Maps of rules to dynamically add to jenkins role"
   default     = []
 }
 
-variable "jenkins_role_rules" {
-  description = "Maps of tags to dynamically add to autoscaling group"
-  default     = []
-}
-
-variable "jenkins_deployment_name" {
+variable "deployment_name" {
   description = "Name of the jenkins deployment"
   type        = "string"
 }
 
-variable "jenkins_claim_name" {
+variable "claim_name" {
   description = "Name of the persistent volume claim for jenkins"
   type        = "string"
 }
 
-variable "jenkins_ingress_name" {
+variable "ingress_name" {
   description = "Name of the ingress service for jenkins"
   type        = "string"
 }
 
-variable "jenkins_ingress_annotations" {
+variable "ingress_annotations" {
   description = "Map of annotations to add to the ingress service"
   default     = {}
+}
+
+variable "ingress_labels" {
+  description = "Labels applied to the ingress service"
+  default     = "jenkins"
+}
+
+variable "container_name" {
+  description = "Name of the jenkins container"
+  type        = "string"
+}
+
+variable "service_discovery_name" {
+  description = "Name of the jenkins discovery service"
+  type        = "string"
+}
+
+variable "service_ui_name" {
+  description = "Name of the jenkins ui service"
+  type        = "string"
 }

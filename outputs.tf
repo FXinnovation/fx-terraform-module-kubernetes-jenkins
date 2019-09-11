@@ -15,5 +15,5 @@ output "service_discovery_port" {
 }
 
 output "service_ingress_addr" {
-  value = data.external.ingress_public_ip.result.extvar
+  value = kubernetes_ingress.this.load_balancer_ingress
 }

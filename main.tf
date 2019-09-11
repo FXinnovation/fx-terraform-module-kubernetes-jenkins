@@ -1,111 +1,6 @@
-resource "kubernetes_service_account" "efs" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name      = "efs-provisioner"
-    namespace = var.jenkins_namespace
-  }
-}
-
-resource "kubernetes_cluster_role" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "efs-provisioner-runner"
-  }
-
-  rule {
-    api_groups = [""]
-    resources  = ["persistentvolumes"]
-    verbs      = ["get", "list", "watch", "create", "delete"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["persistentvolumeclaims"]
-    verbs      = ["get", "list", "watch", "update"]
-  }
-  rule {
-    api_groups = ["storage.k8s.io"]
-    resources  = ["storageclasses"]
-    verbs      = ["get", "list", "watch"]
-  }
-  rule {
-    api_groups = [""]
-    resources  = ["events"]
-    verbs      = ["create", "update", "patch"]
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "run-efs-provisioner"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "efs-provisioner-runner"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "efs-provisioner"
-    namespace = "default"
-  }
-}
-
-resource "kubernetes_role" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "leader-locking-efs-provisioner"
-  }
-
-  rule {
-    api_groups = [""]
-    resources  = ["endpoints"]
-    verbs      = ["get", "list", "watch", "create", "update", "patch"]
-  }
-}
-
-resource "kubernetes_role_binding" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "leader-locking-efs-provisioner"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "Role"
-    name      = "leader-locking-efs-provisioner"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "efs-provisioner"
-    namespace = "default"
-  }
-}
-
-resource "kubernetes_config_map" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "efs-provisioner"
-  }
-
-  data = {
-    "file.system.id"   = var.efs_id
-    "aws.region"       = var.region
-    "provisioner.name" = "example.com/aws-efs"
-    "dns.name"         = var.efs_dns_name
-  }
-}
-
-resource "kubernetes_storage_class" "this" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name = "aws-efs"
-  }
-  storage_provisioner = "example.com/aws-efs"
-}
-
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
-    name = var.jenkins_claim_name
+    name = var.claim_name
     annotations = {
       "volume.beta.kubernetes.io/storage-class" = var.storage_class
     }
@@ -114,7 +9,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = var.jenkins_data_size
+        storage = var.storage_size
       }
     }
   }
@@ -122,7 +17,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
 
 resource "kubernetes_role" "jenkins" {
   metadata {
-    name = var.jenkins_role_name
+    name = var.role_name
   }
 
   rule {
@@ -147,7 +42,7 @@ resource "kubernetes_role" "jenkins" {
   }
 
   dynamic "rule" {
-    for_each = var.jenkins_role_rules
+    for_each = var.role_rules
     content {
       api_groups = [rule.value.api_groups]
       resources  = [rule.value.resources]
@@ -158,119 +53,31 @@ resource "kubernetes_role" "jenkins" {
 
 resource "kubernetes_service_account" "this" {
   metadata {
-    name      = var.jenkins_service_account
-    namespace = var.jenkins_namespace
+    name      = var.service_account_name
+    namespace = var.namespace
   }
 }
 
 resource "kubernetes_role_binding" "jenkins" {
   metadata {
-    name = var.jenkins_role_binding
+    name = var.role_binding_name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = var.jenkins_role_binding
+    name      = var.role_binding_name
   }
   subject {
     kind      = "ServiceAccount"
-    name      = var.jenkins_service_account
-    namespace = var.jenkins_namespace
-  }
-}
-
-resource "kubernetes_deployment" "efs" {
-  count = var.efs_enabled == "true" ? 1 : 0
-  metadata {
-    name      = "efs-provisioner"
-    namespace = "default"
-  }
-
-  spec {
-    replicas = 2
-    strategy {
-      type = "Recreate"
-    }
-
-    selector {
-      match_labels = {
-        app = "efs-provisioner"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "efs-provisioner"
-        }
-      }
-
-      spec {
-        service_account_name            = "efs-provisioner"
-        automount_service_account_token = true
-        container {
-          image = "quay.io/external_storage/efs-provisioner:latest"
-          name  = "efs-provisioner"
-
-          env {
-            name = "FILE_SYSTEM_ID"
-            value_from {
-              config_map_key_ref {
-                name = "efs-provisioner"
-                key  = "file.system.id"
-              }
-            }
-          }
-          env {
-            name = "AWS_REGION"
-            value_from {
-              config_map_key_ref {
-                name = "efs-provisioner"
-                key  = "aws.region"
-              }
-            }
-          }
-          env {
-            name = "DNS_NAME"
-            value_from {
-              config_map_key_ref {
-                name = "efs-provisioner"
-                key  = "dns.name"
-              }
-            }
-          }
-          env {
-            name = "PROVISIONER_NAME"
-            value_from {
-              config_map_key_ref {
-                name = "efs-provisioner"
-                key  = "provisioner.name"
-              }
-            }
-          }
-
-          volume_mount {
-            mount_path = "/persistentvolumes"
-            name       = "pv-volume"
-          }
-        }
-        volume {
-          name = "pv-volume"
-          nfs {
-            path   = "/"
-            server = var.efs_dns_name
-          }
-        }
-      }
-    }
+    name      = var.service_account_name
+    namespace = var.namespace
   }
 }
 
 resource "kubernetes_deployment" "this" {
-  depends_on = ["kubernetes_deployment.efs"]
   metadata {
-    name      = var.jenkins_deployment_name
-    namespace = var.jenkins_namespace
+    name      = var.deployment_name
+    namespace = var.namespace
   }
 
   spec {
@@ -281,23 +88,23 @@ resource "kubernetes_deployment" "this" {
 
     selector {
       match_labels = {
-        app = var.jenkins_deployment_name
+        app = var.deployment_name
       }
     }
 
     template {
       metadata {
         labels = {
-          app = var.jenkins_deployment_name
+          app = var.deployment_name
         }
       }
 
       spec {
-        service_account_name            = var.jenkins_service_account
+        service_account_name            = var.service_account_name
         automount_service_account_token = true
         container {
           image = "fxinnovation/jenkins:3.33.0"
-          name  = "jenkins-master"
+          name  = var.container_name
 
           resources {
             limits {
@@ -348,7 +155,7 @@ resource "kubernetes_deployment" "this" {
         volume {
           name = "jenkins-data"
           persistent_volume_claim {
-            claim_name = var.jenkins_claim_name
+            claim_name = var.claim_name
           }
         }
       }
@@ -358,11 +165,12 @@ resource "kubernetes_deployment" "this" {
 
 resource "kubernetes_service" "jenkins-ui" {
   metadata {
-    name = "jenkins-ui"
+    name      = var.service_ui_name
+    namespace = var.namespace
   }
   spec {
     selector = {
-      app = "jenkins-master"
+      app = var.container_name
     }
     port {
       port        = 8080
@@ -377,11 +185,12 @@ resource "kubernetes_service" "jenkins-ui" {
 
 resource "kubernetes_service" "jenkins-discovery" {
   metadata {
-    name = "jenkins-discovery"
+    name      = var.service_discovery_name
+    namespace = var.namespace
   }
   spec {
     selector = {
-      app = "jenkins-master"
+      app = var.container_name
     }
     port {
       port        = 50000
@@ -394,11 +203,12 @@ resource "kubernetes_service" "jenkins-discovery" {
 
 resource "kubernetes_ingress" "this" {
   metadata {
-    name = "jenkins"
+    name      = var.ingress_name
+    namespace = var.namespace
     labels = {
-      app = "jenkins"
+      app = var.ingress_labels
     }
-    annotations = var.jenkins_ingress_annotations
+    annotations = var.ingress_annotations
   }
 
   spec {
@@ -406,16 +216,11 @@ resource "kubernetes_ingress" "this" {
       http {
         path {
           backend {
-            service_name = "jenkins-ui"
+            service_name = var.service_ui_name
             service_port = 8080
           }
         }
       }
     }
   }
-}
-
-data "external" "ingress_public_ip" {
-  depends_on = ["kubernetes_ingress.this"]
-  program    = ["bash", "${path.module}/ingress/public-address.sh"]
 }
