@@ -1,6 +1,6 @@
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
-    name = var.claim_name
+    name      = var.claim_name
     namespace = var.namespace
     annotations = {
       "volume.beta.kubernetes.io/storage-class" = var.storage_class
@@ -18,7 +18,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
 
 resource "kubernetes_role" "jenkins" {
   metadata {
-    name = var.role_name
+    name      = var.role_name
     namespace = var.namespace
   }
 

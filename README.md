@@ -8,7 +8,6 @@ Terraform module to deploy jenkins on kubernetes
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | claim\_name | Name of the persistent volume claim for jenkins | string | n/a | yes |
-| cluster\_name | Name of the eks cluster | string | n/a | yes |
 | container\_name | Name of the jenkins container | string | n/a | yes |
 | deployment\_name | Name of the jenkins deployment | string | n/a | yes |
 | ingress\_annotations | Map of annotations to add to the ingress service | map | `{}` | no |
@@ -17,7 +16,7 @@ Terraform module to deploy jenkins on kubernetes
 | namespace | Name of the namespace where jenkins is deployed | string | `"default"` | no |
 | role\_binding\_name | Name of the role binding for jenkins | string | n/a | yes |
 | role\_name | Name of the jenkins role | string | n/a | yes |
-| role\_rules | Maps of rules to dynamically add to jenkins role | list | `[]` | no |
+| role\_rules | List of maps of rules to dynamically add to jenkins role | list | `[]` | no |
 | service\_account\_name | Name of the service account that run jenkins | string | n/a | yes |
 | service\_discovery\_name | Name of the jenkins discovery service | string | n/a | yes |
 | service\_ui\_name | Name of the jenkins ui service | string | n/a | yes |
