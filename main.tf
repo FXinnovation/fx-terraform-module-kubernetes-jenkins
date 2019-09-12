@@ -1,6 +1,7 @@
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
     name = var.claim_name
+    namespace = var.namespace
     annotations = {
       "volume.beta.kubernetes.io/storage-class" = var.storage_class
     }
@@ -18,6 +19,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
 resource "kubernetes_role" "jenkins" {
   metadata {
     name = var.role_name
+    namespace = var.namespace
   }
 
   rule {
@@ -100,7 +102,7 @@ resource "kubernetes_deployment" "this" {
       }
 
       spec {
-        service_account_name            = var.service_account_name
+        service_account_name            = kubernetes_service_account.this.metadata[0].name
         automount_service_account_token = true
         container {
           image = "fxinnovation/jenkins:3.33.0"
@@ -155,7 +157,7 @@ resource "kubernetes_deployment" "this" {
         volume {
           name = "jenkins-data"
           persistent_volume_claim {
-            claim_name = var.claim_name
+            claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
           }
         }
       }
@@ -170,7 +172,7 @@ resource "kubernetes_service" "jenkins-ui" {
   }
   spec {
     selector = {
-      app = var.container_name
+      app = var.deployment_name
     }
     port {
       port        = 8080
@@ -190,7 +192,7 @@ resource "kubernetes_service" "jenkins-discovery" {
   }
   spec {
     selector = {
-      app = var.container_name
+      app = var.deployment_name
     }
     port {
       port        = 50000

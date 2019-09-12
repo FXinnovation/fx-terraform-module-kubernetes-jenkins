@@ -1,8 +1,3 @@
-variable "cluster_name" {
-  description = "Name of the eks cluster"
-  type        = "string"
-}
-
 variable "storage_class" {
   description = "Name of the storage class to use for pvc"
   type        = "string"
@@ -34,7 +29,7 @@ variable "namespace" {
 }
 
 variable "role_rules" {
-  description = "Maps of rules to dynamically add to jenkins role"
+  description = "List of maps of rules to dynamically add to jenkins role"
   default     = []
 }
 
