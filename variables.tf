@@ -72,3 +72,28 @@ variable "service_ui_name" {
   description = "Name of the jenkins ui service"
   type        = "string"
 }
+
+variable "cpu_max" {
+  description = "Maximum number of cpu that can be used by jenkins"
+  default     = "3"
+}
+
+variable "cpu_request" {
+  description = "Requested number of cpu for jenkins"
+  default     = "2"
+}
+
+variable "memory_max" {
+  description = "Maximum amount of ram that can be used by jenkins"
+  default     = "6144Mi"
+}
+
+variable "memory_request" {
+  description = "Requested amount of ram for jenkins"
+  default     = "4096Mi"
+}
+
+variable "docker_image" {
+  description = "Name of the docker image to use for jenkins"
+  default     = "fxinnovation/jenkins:3.33.0"
+}

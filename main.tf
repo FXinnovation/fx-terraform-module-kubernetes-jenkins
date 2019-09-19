@@ -105,17 +105,17 @@ resource "kubernetes_deployment" "this" {
         service_account_name            = kubernetes_service_account.this.metadata[0].name
         automount_service_account_token = true
         container {
-          image = "fxinnovation/jenkins:3.33.0"
+          image = var.docker_image
           name  = var.container_name
 
           resources {
             limits {
-              cpu    = "3"
-              memory = "6144Mi"
+              cpu    = var.cpu_max
+              memory = var.memory_max
             }
             requests {
-              cpu    = "2"
-              memory = "4096Mi"
+              cpu    = var.cpu_request
+              memory = var.memory_request
             }
           }
 
