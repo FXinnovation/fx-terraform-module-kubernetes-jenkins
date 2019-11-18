@@ -6,6 +6,10 @@ output "service_ui_port" {
   value = kubernetes_service.jenkins-ui.spec[0].port
 }
 
+output "service_ui_node_port" {
+  value = kubernetes_service.jenkins-ui.spec[0].port[0].node_port
+}
+
 output "service_discovery_id" {
   value = kubernetes_service.jenkins-discovery.id
 }
