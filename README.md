@@ -36,6 +36,7 @@ Terraform module to deploy jenkins on kubernetes
 | service\_discovery\_port |  |
 | service\_ingress\_addr |  |
 | service\_ui\_id |  |
+| service\_ui\_node\_port |  |
 | service\_ui\_port |  |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
