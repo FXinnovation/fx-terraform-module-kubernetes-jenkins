@@ -1,26 +1,26 @@
 variable "storage_class" {
   description = "Name of the storage class to use for pvc"
-  type        = "string"
+  type = string
 }
 
 variable "storage_size" {
   description = "Size of the persistent volume used to store jenkins data"
-  type        = "string"
+  type = string
 }
 
 variable "role_name" {
   description = "Name of the jenkins role"
-  type        = "string"
+  type = string
 }
 
 variable "service_account_name" {
   description = "Name of the service account that run jenkins"
-  type        = "string"
+  type = string
 }
 
 variable "role_binding_name" {
   description = "Name of the role binding for jenkins"
-  type        = "string"
+  type = string
 }
 
 variable "namespace" {
@@ -35,17 +35,17 @@ variable "role_rules" {
 
 variable "deployment_name" {
   description = "Name of the jenkins deployment"
-  type        = "string"
+  type = string
 }
 
 variable "claim_name" {
   description = "Name of the persistent volume claim for jenkins"
-  type        = "string"
+  type = string
 }
 
 variable "ingress_name" {
   description = "Name of the ingress service for jenkins"
-  type        = "string"
+  type = string
 }
 
 variable "ingress_annotations" {
@@ -60,17 +60,17 @@ variable "ingress_labels" {
 
 variable "container_name" {
   description = "Name of the jenkins container"
-  type        = "string"
+  type = string
 }
 
 variable "service_discovery_name" {
   description = "Name of the jenkins discovery service"
-  type        = "string"
+  type = string
 }
 
 variable "service_ui_name" {
   description = "Name of the jenkins ui service"
-  type        = "string"
+  type = string
 }
 
 variable "cpu_max" {
