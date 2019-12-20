@@ -1,3 +1,9 @@
+resource "kubernetes_namespace" "this" {
+  metadata {
+    name = var.namespace
+  }
+}
+
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
     name      = var.claim_name
