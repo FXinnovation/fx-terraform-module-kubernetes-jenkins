@@ -1,6 +1,6 @@
 variable "namespace_creation" {
   description = "Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613"
-  type = boolean
+  type = bool
   default = true
 }
 
