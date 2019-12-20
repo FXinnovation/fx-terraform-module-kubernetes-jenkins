@@ -19,6 +19,7 @@ Terraform module to deploy jenkins on kubernetes
 | memory\_max | Maximum amount of ram that can be used by jenkins | string | `"6144Mi"` | no |
 | memory\_request | Requested amount of ram for jenkins | string | `"4096Mi"` | no |
 | namespace | Name of the namespace where jenkins is deployed | string | `"default"` | no |
+| namespace\_creation | Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613 | bool | `"true"` | no |
 | role\_binding\_name | Name of the role binding for jenkins | string | n/a | yes |
 | role\_name | Name of the jenkins role | string | n/a | yes |
 | role\_rules | List of maps of rules to dynamically add to jenkins role | list | `[]` | no |
