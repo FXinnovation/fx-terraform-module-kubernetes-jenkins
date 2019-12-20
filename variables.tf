@@ -1,3 +1,9 @@
+variable "namespace_creation" {
+  description = "Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613"
+  type = boolean
+  default = true
+}
+
 variable "storage_class" {
   description = "Name of the storage class to use for pvc"
   type = string
