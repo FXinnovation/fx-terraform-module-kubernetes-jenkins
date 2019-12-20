@@ -35,6 +35,7 @@ resource "aws_acm_certificate" "this" {
 module "standard" {
   source = "../../"
 
+  namespace_creation   = false
   storage_class        = "aws-efs"
   storage_size         = "1Gi"
   role_name            = "jenkins-${random_string.this.result}"
