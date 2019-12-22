@@ -71,7 +71,8 @@ resource "kubernetes_service_account" "this" {
 
 resource "kubernetes_role_binding" "jenkins" {
   metadata {
-    name = var.role_binding_name
+    name      = var.role_binding_name
+    namespace = var.namespace
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
