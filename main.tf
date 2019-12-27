@@ -228,6 +228,12 @@ resource "kubernetes_ingress" "this" {
       http {
         path {
           backend {
+            service_name = "ssl-redirect"
+            service_port = "use-annotation"
+          }
+        }
+        path {
+          backend {
             service_name = var.service_ui_name
             service_port = 8080
           }
