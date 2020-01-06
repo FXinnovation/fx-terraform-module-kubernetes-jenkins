@@ -106,5 +106,5 @@ variable "docker_image" {
 
 variable "ingress_paths" {
   description = "Paths for jenkins ingress"
-  default = { ui = { "service_name" = "jenkins-ui", "service_port" = "8080" } }
+  default     = { ui = { "service_name" = "jenkins-ui", "service_port" = "8080" } }
 }

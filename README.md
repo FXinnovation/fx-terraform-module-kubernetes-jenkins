@@ -16,6 +16,7 @@ Terraform module to deploy jenkins on kubernetes
 | ingress\_annotations | Map of annotations to add to the ingress service | map | `{}` | no |
 | ingress\_labels | Labels applied to the ingress service | string | `"jenkins"` | no |
 | ingress\_name | Name of the ingress service for jenkins | string | n/a | yes |
+| ingress\_paths | Paths for jenkins ingress | map | `{ "ui": [ { "service_name": "jenkins-ui", "service_port": "8080" } ] }` | no |
 | memory\_max | Maximum amount of ram that can be used by jenkins | string | `"6144Mi"` | no |
 | memory\_request | Requested amount of ram for jenkins | string | `"4096Mi"` | no |
 | namespace | Name of the namespace where jenkins is deployed | string | `"default"` | no |
