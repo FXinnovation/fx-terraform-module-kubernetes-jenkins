@@ -103,3 +103,8 @@ variable "docker_image" {
   description = "Name of the docker image to use for jenkins"
   default     = "fxinnovation/jenkins:3.33.0"
 }
+
+variable "ingress_paths" {
+  description = "Paths for jenkins ingress"
+  default = { ui = { "service_name" = "jenkins-ui", "service_port" = "8080" } }
+}

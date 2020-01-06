@@ -226,16 +226,13 @@ resource "kubernetes_ingress" "this" {
   spec {
     rule {
       http {
-        path {
-          backend {
-            service_name = "ssl-redirect"
-            service_port = "use-annotation"
-          }
-        }
-        path {
-          backend {
-            service_name = var.service_ui_name
-            service_port = 8080
+        dynamic "path" {
+          for_each = var.ingress_paths
+          content {
+            backend {
+              service_name = path.value["service_name"]
+              service_port = path.value["service_port"]
+            }
           }
         }
       }
