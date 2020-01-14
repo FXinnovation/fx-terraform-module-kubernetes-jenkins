@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2
+
+* Add sleep after namespace to fix non availability issue
+
 ## 1.0.1
 
 * Fix rolebinding namespace issue
