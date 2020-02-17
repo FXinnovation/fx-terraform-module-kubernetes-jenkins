@@ -8,6 +8,7 @@ Terraform module to deploy jenkins on kubernetes
 | Name | Version |
 |------|---------|
 | kubernetes | n/a |
+| null | n/a |
 
 ## Inputs
 
@@ -20,9 +21,10 @@ Terraform module to deploy jenkins on kubernetes
 | deployment\_name | Name of the jenkins deployment | `string` | n/a | yes |
 | docker\_image | Name of the docker image to use for jenkins | `string` | `"fxinnovation/jenkins:3.33.0"` | no |
 | ingress\_annotations | Map of annotations to add to the ingress service | `map` | `{}` | no |
+| ingress\_depend\_on | Force dependency on ingress | `list(string)` | `[]` | no |
 | ingress\_labels | Labels applied to the ingress service | `string` | `"jenkins"` | no |
 | ingress\_name | Name of the ingress service for jenkins | `string` | n/a | yes |
-| ingress\_paths | Paths for jenkins ingress | `map` | <pre>{<br>  "ui": {<br>    "service_name": "jenkins-ui",<br>    "service_port": "8080"<br>  }<br>}<br></pre> | no |
+| ingress\_paths | Paths for jenkins ingress | `map` | <pre>{<br>  "ui": {<br>    "service_name": "jenkins-ui",<br>    "service_port": "8080"<br>  }<br>}</pre> | no |
 | memory\_max | Maximum amount of ram that can be used by jenkins | `string` | `"6144Mi"` | no |
 | memory\_request | Requested amount of ram for jenkins | `string` | `"4096Mi"` | no |
 | namespace | Name of the namespace where jenkins is deployed | `string` | `"default"` | no |

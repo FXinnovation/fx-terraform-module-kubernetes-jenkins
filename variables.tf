@@ -108,3 +108,9 @@ variable "ingress_paths" {
   description = "Paths for jenkins ingress"
   default     = { ui = { "service_name" = "jenkins-ui", "service_port" = "8080" } }
 }
+
+variable "ingress_depend_on" {
+  description = "Force dependency on ingress"
+  default     = []
+  type        = list(string)
+}

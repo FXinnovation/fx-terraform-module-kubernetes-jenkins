@@ -217,6 +217,11 @@ resource "kubernetes_service" "jenkins-discovery" {
 }
 
 resource "kubernetes_ingress" "this" {
+
+  depends_on = [
+    "null_resource.module_depends_on"
+  ]
+
   metadata {
     name      = var.ingress_name
     namespace = var.namespace
@@ -240,5 +245,11 @@ resource "kubernetes_ingress" "this" {
         }
       }
     }
+  }
+}
+
+resource "null_resource" "module_depends_on" {
+  triggers = {
+    value = "${length(var.ingress_depend_on)}"
   }
 }

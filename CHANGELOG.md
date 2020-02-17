@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+* Add explicit dependancy on ingress
+
 ## 1.0.2
 
 * Add sleep after namespace to fix non availability issue
