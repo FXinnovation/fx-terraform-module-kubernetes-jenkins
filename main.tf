@@ -14,9 +14,11 @@ resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
     name      = var.claim_name
     namespace = var.namespace
-    annotations = {
-      "volume.beta.kubernetes.io/storage-class" = var.storage_class
-    }
+    annotations = merge(
+      map("volume.beta.kubernetes.io/storage-class", var.storage_class),
+      var.claim_annotations,
+      var.annotations
+    )
   }
   spec {
     access_modes = ["ReadWriteOnce"]
@@ -32,6 +34,10 @@ resource "kubernetes_role" "jenkins" {
   metadata {
     name      = var.role_name
     namespace = var.namespace
+    annotations = merge(
+      var.role_annotations,
+      var.annotations
+    )
   }
 
   rule {
@@ -69,6 +75,10 @@ resource "kubernetes_service_account" "this" {
   metadata {
     name      = var.service_account_name
     namespace = var.namespace
+    annotations = merge(
+      var.service_account_annotations,
+      var.annotations
+    )
   }
 }
 
@@ -76,6 +86,10 @@ resource "kubernetes_role_binding" "jenkins" {
   metadata {
     name      = var.role_binding_name
     namespace = var.namespace
+    annotations = merge(
+      var.role_binding_annotations,
+      var.annotations
+    )
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -91,8 +105,9 @@ resource "kubernetes_role_binding" "jenkins" {
 
 resource "kubernetes_deployment" "this" {
   metadata {
-    name      = var.deployment_name
-    namespace = var.namespace
+    name        = var.deployment_name
+    namespace   = var.namespace
+    annotations = var.annotations
   }
 
   spec {
@@ -182,6 +197,10 @@ resource "kubernetes_service" "jenkins-ui" {
   metadata {
     name      = var.service_ui_name
     namespace = var.namespace
+    annotations = merge(
+      var.service_ui_annotations,
+      var.annotations
+    )
   }
   spec {
     selector = {
@@ -202,6 +221,10 @@ resource "kubernetes_service" "jenkins-discovery" {
   metadata {
     name      = var.service_discovery_name
     namespace = var.namespace
+    annotations = merge(
+      var.service_discovery_annotations,
+      var.annotations
+    )
   }
   spec {
     selector = {
@@ -217,18 +240,16 @@ resource "kubernetes_service" "jenkins-discovery" {
 }
 
 resource "kubernetes_ingress" "this" {
-
-  depends_on = [
-    "null_resource.module_depends_on"
-  ]
-
   metadata {
     name      = var.ingress_name
     namespace = var.namespace
     labels = {
       app = var.ingress_labels
     }
-    annotations = var.ingress_annotations
+    annotations = merge(
+      var.ingress_annotations,
+      var.annotations
+    )
   }
 
   spec {
@@ -245,11 +266,5 @@ resource "kubernetes_ingress" "this" {
         }
       }
     }
-  }
-}
-
-resource "null_resource" "module_depends_on" {
-  triggers = {
-    value = "${length(var.ingress_depend_on)}"
   }
 }

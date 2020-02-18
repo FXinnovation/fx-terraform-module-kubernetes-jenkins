@@ -8,19 +8,20 @@ Terraform module to deploy jenkins on kubernetes
 | Name | Version |
 |------|---------|
 | kubernetes | n/a |
-| null | n/a |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:-----:|
+| annotations | Annotations to be merged with all resources | `map` | `{}` | no |
+| claim\_annotations | Annotations to be merged with jenkins persistent claim | `map` | `{}` | no |
 | claim\_name | Name of the persistent volume claim for jenkins | `string` | n/a | yes |
 | container\_name | Name of the jenkins container | `string` | n/a | yes |
 | cpu\_max | Maximum number of cpu that can be used by jenkins | `string` | `"3"` | no |
 | cpu\_request | Requested number of cpu for jenkins | `string` | `"2"` | no |
 | deployment\_name | Name of the jenkins deployment | `string` | n/a | yes |
 | docker\_image | Name of the docker image to use for jenkins | `string` | `"fxinnovation/jenkins:3.33.0"` | no |
-| ingress\_annotations | Map of annotations to add to the ingress service | `map` | `{}` | no |
+| ingress\_annotations | Annotations to merged with ingress service | `map` | `{}` | no |
 | ingress\_depend\_on | Force dependency on ingress | `list(string)` | `[]` | no |
 | ingress\_labels | Labels applied to the ingress service | `string` | `"jenkins"` | no |
 | ingress\_name | Name of the ingress service for jenkins | `string` | n/a | yes |
@@ -29,11 +30,16 @@ Terraform module to deploy jenkins on kubernetes
 | memory\_request | Requested amount of ram for jenkins | `string` | `"4096Mi"` | no |
 | namespace | Name of the namespace where jenkins is deployed | `string` | `"default"` | no |
 | namespace\_creation | Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613 | `bool` | `true` | no |
+| role\_annotations | Annotations to be merged with jenkins role | `map` | `{}` | no |
+| role\_binding\_annotations | Annotations to be merged with jenkins role binding | `map` | `{}` | no |
 | role\_binding\_name | Name of the role binding for jenkins | `string` | n/a | yes |
 | role\_name | Name of the jenkins role | `string` | n/a | yes |
 | role\_rules | List of maps of rules to dynamically add to jenkins role | `list` | `[]` | no |
+| service\_account\_annotations | Annotations to be merged with jenkins service account | `map` | `{}` | no |
 | service\_account\_name | Name of the service account that run jenkins | `string` | n/a | yes |
+| service\_discovery\_annotations | Annotations to be merged with jenkins service discovery | `map` | `{}` | no |
 | service\_discovery\_name | Name of the jenkins discovery service | `string` | n/a | yes |
+| service\_ui\_annotations | Annotations to be merged with jenkins ui service | `map` | `{}` | no |
 | service\_ui\_name | Name of the jenkins ui service | `string` | n/a | yes |
 | storage\_class | Name of the storage class to use for pvc | `string` | n/a | yes |
 | storage\_size | Size of the persistent volume used to store jenkins data | `string` | n/a | yes |

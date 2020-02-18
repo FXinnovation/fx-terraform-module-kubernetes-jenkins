@@ -4,6 +4,11 @@ variable "namespace_creation" {
   default     = true
 }
 
+variable "annotations" {
+  description = "Annotations to be merged with all resources"
+  default     = {}
+}
+
 variable "storage_class" {
   description = "Name of the storage class to use for pvc"
   type        = string
@@ -19,14 +24,29 @@ variable "role_name" {
   type        = string
 }
 
+variable "role_annotations" {
+  description = "Annotations to be merged with jenkins role"
+  default     = {}
+}
+
 variable "service_account_name" {
   description = "Name of the service account that run jenkins"
   type        = string
 }
 
+variable "service_account_annotations" {
+  description = "Annotations to be merged with jenkins service account"
+  default     = {}
+}
+
 variable "role_binding_name" {
   description = "Name of the role binding for jenkins"
   type        = string
+}
+
+variable "role_binding_annotations" {
+  description = "Annotations to be merged with jenkins role binding"
+  default     = {}
 }
 
 variable "namespace" {
@@ -49,13 +69,18 @@ variable "claim_name" {
   type        = string
 }
 
+variable "claim_annotations" {
+  description = "Annotations to be merged with jenkins persistent claim"
+  default     = {}
+}
+
 variable "ingress_name" {
   description = "Name of the ingress service for jenkins"
   type        = string
 }
 
 variable "ingress_annotations" {
-  description = "Map of annotations to add to the ingress service"
+  description = "Annotations to merged with ingress service"
   default     = {}
 }
 
@@ -74,9 +99,19 @@ variable "service_discovery_name" {
   type        = string
 }
 
+variable "service_discovery_annotations" {
+  description = "Annotations to be merged with jenkins service discovery"
+  default     = {}
+}
+
 variable "service_ui_name" {
   description = "Name of the jenkins ui service"
   type        = string
+}
+
+variable "service_ui_annotations" {
+  description = "Annotations to be merged with jenkins ui service"
+  default     = {}
 }
 
 variable "cpu_max" {
