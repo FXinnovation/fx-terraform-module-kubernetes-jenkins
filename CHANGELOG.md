@@ -2,7 +2,8 @@
 
 ## 1.1.0
 
-* Add explicit dependancy on ingress
+* Feat: Add explicit dependancy on ingress
+* Feat: Now run test on kind
 
 ## 1.0.2
 

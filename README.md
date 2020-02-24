@@ -16,6 +16,7 @@ Terraform module to deploy jenkins on kubernetes
 | annotations | Annotations to be merged with all resources | `map` | `{}` | no |
 | claim\_annotations | Annotations to be merged with jenkins persistent claim | `map` | `{}` | no |
 | claim\_name | Name of the persistent volume claim for jenkins | `string` | n/a | yes |
+| claim\_wait\_until\_bound | Wait volume claim creation until bound | `bool` | `true` | no |
 | container\_name | Name of the jenkins container | `string` | n/a | yes |
 | cpu\_max | Maximum number of cpu that can be used by jenkins | `string` | `"3"` | no |
 | cpu\_request | Requested number of cpu for jenkins | `string` | `"2"` | no |

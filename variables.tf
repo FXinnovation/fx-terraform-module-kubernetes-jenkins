@@ -74,6 +74,11 @@ variable "claim_annotations" {
   default     = {}
 }
 
+variable "claim_wait_until_bound" {
+  description = "Wait volume claim creation until bound"
+  default     = true
+}
+
 variable "ingress_name" {
   description = "Name of the ingress service for jenkins"
   type        = string

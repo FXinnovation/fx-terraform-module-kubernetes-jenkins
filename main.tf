@@ -28,6 +28,8 @@ resource "kubernetes_persistent_volume_claim" "this" {
       }
     }
   }
+
+  wait_until_bound = var.claim_wait_until_bound
 }
 
 resource "kubernetes_role" "jenkins" {
