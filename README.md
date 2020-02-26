@@ -20,6 +20,7 @@ Terraform module to deploy jenkins on kubernetes
 | container\_name | Name of the jenkins container | `string` | n/a | yes |
 | cpu\_max | Maximum number of cpu that can be used by jenkins | `string` | `"3"` | no |
 | cpu\_request | Requested number of cpu for jenkins | `string` | `"2"` | no |
+| deployment\_annotations | Annotations to be merged with the jenkins deployment | `map` | `{}` | no |
 | deployment\_name | Name of the jenkins deployment | `string` | n/a | yes |
 | docker\_image | Name of the docker image to use for jenkins | `string` | `"fxinnovation/jenkins:3.33.0"` | no |
 | ingress\_annotations | Annotations to merged with ingress service | `map` | `{}` | no |

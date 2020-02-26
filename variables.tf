@@ -64,6 +64,11 @@ variable "deployment_name" {
   type        = string
 }
 
+variable "deployment_annotations" {
+  description = "Annotations to be merged with the jenkins deployment"
+  default     = {}
+}
+
 variable "claim_name" {
   description = "Name of the persistent volume claim for jenkins"
   type        = string

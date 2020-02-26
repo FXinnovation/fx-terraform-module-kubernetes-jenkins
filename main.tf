@@ -107,9 +107,12 @@ resource "kubernetes_role_binding" "jenkins" {
 
 resource "kubernetes_deployment" "this" {
   metadata {
-    name        = var.deployment_name
-    namespace   = var.namespace
-    annotations = var.annotations
+    name      = var.deployment_name
+    namespace = var.namespace
+    annotations = merge(
+      var.deployment_annotations,
+      var.annotations,
+    )
   }
 
   spec {
