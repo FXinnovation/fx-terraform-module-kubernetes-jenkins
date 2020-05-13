@@ -1,23 +1,47 @@
-output "service_ui_id" {
-  value = kubernetes_service.jenkins-ui.id
+#####
+# Global
+#####
+
+output "namespace_name" {
+  value = var.enabled ? var.namespace : ""
 }
 
-output "service_ui_port" {
-  value = kubernetes_service.jenkins-ui.spec[0].port
+#####
+# Statefulset
+#####
+
+output "statefulset" {
+  value = element(concat(kubernetes_stateful_set.this.*, list({})), 0)
 }
 
-output "service_ui_node_port" {
-  value = kubernetes_service.jenkins-ui.spec[0].port[0].node_port
+#####
+# Service
+#####
+
+output "service" {
+  value = element(concat(kubernetes_service.this.*, list({})), 0)
 }
 
-output "service_discovery_id" {
-  value = kubernetes_service.jenkins-discovery.id
+#####
+# Ingress
+#####
+
+output "ingress" {
+  value = element(concat(kubernetes_ingress.this.*, list({})), 0)
 }
 
-output "service_discovery_port" {
-  value = kubernetes_service.jenkins-discovery.spec[0].port
+#####
+# RBAC
+#####
+
+output "service_account" {
+  value = element(concat(kubernetes_service_account.this.*, list({})), 0)
 }
 
-output "service_ingress_addr" {
-  value = kubernetes_ingress.this.load_balancer_ingress
+output "role" {
+  value = element(concat(kubernetes_role.this.*, list({})), 0)
+}
+
+output "role_binding" {
+  value = element(concat(kubernetes_role_binding.this.*, list({})), 0)
 }

@@ -1,44 +1,341 @@
-resource "kubernetes_namespace" "this" {
-  count = var.namespace_creation ? 1 : 0
+#####
+# Locals
+#####
 
-  metadata {
-    name = var.namespace
+locals {
+  port         = 8080
+  service_port = 80
+  labels = {
+    "version"    = var.image_version
+    "part-of"    = "shared-services"
+    "managed-by" = "terraform"
+    "name"       = "jenkins"
   }
-
-  provisioner "local-exec" {
-    command = "sleep 60"
-  }
+  annotations = {}
 }
 
-resource "kubernetes_persistent_volume_claim" "this" {
+#####
+# Randoms
+#####
+
+resource "random_string" "selector" {
+  count = var.enabled ? 1 : 0
+
+  special = false
+  upper   = false
+  number  = false
+  length  = 8
+}
+
+#####
+# Statefulset
+#####
+
+resource "kubernetes_stateful_set" "this" {
+  count = var.enabled ? 1 : 0
+
   metadata {
-    name      = var.claim_name
+    name      = var.stateful_set_name
     namespace = var.namespace
     annotations = merge(
-      map("volume.beta.kubernetes.io/storage-class", var.storage_class),
-      var.claim_annotations,
-      var.annotations
+      local.annotations,
+      var.annotations,
+      var.stateful_set_annotations
+    )
+    labels = merge(
+      {
+        instance  = var.stateful_set_name
+        component = "application"
+      },
+      local.labels,
+      var.labels,
+      var.stateful_set_labels
     )
   }
+
   spec {
-    access_modes = ["ReadWriteOnce"]
-    resources {
-      requests = {
-        storage = var.storage_size
+    replicas     = 1
+    service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+
+    update_strategy {
+      type = "RollingUpdate"
+    }
+
+    selector {
+      match_labels = {
+        selector = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+      }
+    }
+
+    template {
+      metadata {
+        annotations = merge(
+          local.annotations,
+          var.annotations,
+          var.stateful_set_template_annotations
+        )
+        labels = merge(
+          {
+            instance  = var.stateful_set_name
+            component = "application"
+            selector  = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+          },
+          local.labels,
+          var.labels,
+          var.stateful_set_template_labels
+        )
+      }
+
+      spec {
+        dynamic "init_container" {
+          for_each = var.stateful_set_volume_claim_template_enabled ? [1] : []
+
+          content {
+            name              = "init-chown-data"
+            image             = "busybox:latest"
+            image_pull_policy = "IfNotPresent"
+            command           = ["chown", "-R", "1000:1000", "/data"]
+
+            volume_mount {
+              name       = var.stateful_set_volume_claim_template_name
+              mount_path = "/data"
+              sub_path   = ""
+            }
+          }
+        }
+
+        container {
+          name              = "jenkins"
+          image             = "${var.image}:${var.image_version}"
+          image_pull_policy = "IfNotPresent"
+
+          resources {
+            requests {
+              cpu    = var.resources_requests_cpu
+              memory = var.resources_requests_memory
+            }
+            limits {
+              cpu    = var.resources_limits_cpu
+              memory = var.resources_limits_memory
+            }
+          }
+
+          port {
+            container_port = local.port
+            protocol       = "TCP"
+            name           = "http"
+          }
+
+          port {
+            container_port = var.jnlp_port
+            protocol       = "TCP"
+            name           = "jnlp"
+          }
+
+          readiness_probe {
+            http_get {
+              path   = "/"
+              port   = local.port
+              scheme = "HTTP"
+            }
+
+            initial_delay_seconds = 60
+            timeout_seconds       = 5
+            failure_threshold     = 5
+            success_threshold     = 1
+            period_seconds        = 10
+          }
+
+          liveness_probe {
+            http_get {
+              path   = "/"
+              port   = local.port
+              scheme = "HTTP"
+            }
+
+            initial_delay_seconds = 120
+            timeout_seconds       = 5
+            failure_threshold     = 5
+            success_threshold     = 1
+            period_seconds        = 10
+          }
+
+          dynamic "volume_mount" {
+            for_each = var.stateful_set_volume_claim_template_enabled ? [1] : []
+
+            content {
+              name       = var.stateful_set_volume_claim_template_name
+              mount_path = "/var/jenkins_home"
+              sub_path   = ""
+            }
+          }
+        }
+      }
+    }
+
+    dynamic "volume_claim_template" {
+      for_each = var.stateful_set_volume_claim_template_enabled ? [1] : []
+
+      content {
+        metadata {
+          name      = var.stateful_set_volume_claim_template_name
+          namespace = var.namespace
+          annotations = merge(
+            local.annotations,
+            var.annotations,
+            var.stateful_set_volume_claim_template_annotations
+          )
+          labels = merge(
+            {
+              instance  = var.stateful_set_volume_claim_template_name
+              component = "storage"
+            },
+            local.labels,
+            var.labels,
+            var.stateful_set_volume_claim_template_labels
+          )
+        }
+
+        spec {
+          access_modes       = ["ReadWriteOnce"]
+          storage_class_name = var.stateful_set_volume_claim_template_storage_class
+          resources {
+            requests = {
+              storage = var.stateful_set_volume_claim_template_requests_storage
+            }
+          }
+        }
       }
     }
   }
-
-  wait_until_bound = var.claim_wait_until_bound
 }
 
-resource "kubernetes_role" "jenkins" {
+#####
+# Service
+#####
+
+resource "kubernetes_service" "this" {
+  count = var.enabled ? 1 : 0
+
+  metadata {
+    name      = var.service_name
+    namespace = var.namespace
+    annotations = merge(
+      local.annotations,
+      var.annotations,
+      var.service_annotations
+    )
+    labels = merge(
+      {
+        "instance"  = var.service_name
+        "component" = "network"
+      },
+      local.labels,
+      var.labels,
+      var.service_labels
+    )
+  }
+
+  spec {
+    selector = {
+      selector = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+    }
+
+    type = "ClusterIP"
+
+    port {
+      port        = local.service_port
+      target_port = "http"
+      protocol    = "TCP"
+      name        = "http"
+    }
+
+    port {
+      port        = var.jnlp_port
+      target_port = "jnlp"
+      protocol    = "TCP"
+      name        = "jnlp"
+    }
+  }
+}
+
+#####
+# Ingress
+#####
+
+resource "kubernetes_ingress" "this" {
+  count = var.enabled && var.ingress_enabled ? 1 : 0
+
+  metadata {
+    name      = var.ingress_name
+    namespace = var.namespace
+    annotations = merge(
+      local.annotations,
+      var.annotations,
+      var.ingress_annotations
+    )
+    labels = merge(
+      {
+        instance  = var.ingress_name
+        component = "network"
+      },
+      local.labels,
+      var.labels,
+      var.ingress_labels
+    )
+  }
+
+  spec {
+    backend {
+      service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+      service_port = "http"
+    }
+
+    rule {
+      host = var.ingress_host
+      http {
+        path {
+          backend {
+            service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+            service_port = "http"
+          }
+          path = "/"
+        }
+      }
+    }
+
+    dynamic "tls" {
+      for_each = var.ingress_tls_enabled ? [1] : []
+
+      content {
+        secret_name = var.ingress_tls_secret_name
+        hosts       = [var.ingress_host]
+      }
+    }
+  }
+}
+
+#####
+# RBAC
+#####
+
+resource "kubernetes_role" "this" {
+  count = var.enabled ? 1 : 0
+
   metadata {
     name      = var.role_name
     namespace = var.namespace
+
     annotations = merge(
-      var.role_annotations,
-      var.annotations
+      local.annotations,
+      var.annotations,
+      var.role_annotations
+    )
+
+    labels = merge(
+      local.labels,
+      var.labels,
+      var.role_labels
     )
   }
 
@@ -47,16 +344,19 @@ resource "kubernetes_role" "jenkins" {
     resources  = ["pods"]
     verbs      = ["create", "delete", "get", "list", "patch", "update", "watch"]
   }
+
   rule {
     api_groups = [""]
     resources  = ["pods/exec"]
     verbs      = ["create", "delete", "get", "list", "patch", "update", "watch"]
   }
+
   rule {
     api_groups = [""]
     resources  = ["pods/log"]
     verbs      = ["get", "list", "watch"]
   }
+
   rule {
     api_groups = [""]
     resources  = ["secrets"]
@@ -64,212 +364,60 @@ resource "kubernetes_role" "jenkins" {
   }
 
   dynamic "rule" {
-    for_each = var.role_rules
+    for_each = var.role_additionnal_rules
     content {
-      api_groups = [rule.value.api_groups]
-      resources  = [rule.value.resources]
-      verbs      = [rule.value.verbs]
+      api_groups     = rule.value.api_groups
+      resources      = rule.value.resources
+      resource_names = rule.value.resource_names
+      verbs          = rule.value.verbs
     }
   }
 }
 
 resource "kubernetes_service_account" "this" {
+  count = var.enabled ? 1 : 0
+
   metadata {
     name      = var.service_account_name
     namespace = var.namespace
+
     annotations = merge(
-      var.service_account_annotations,
-      var.annotations
+      local.annotations,
+      var.annotations,
+      var.service_account_annotations
+    )
+
+    labels = merge(
+      local.labels,
+      var.labels,
+      var.service_account_annotations
     )
   }
 }
 
-resource "kubernetes_role_binding" "jenkins" {
+resource "kubernetes_role_binding" "this" {
+  count = var.enabled ? 1 : 0
+
   metadata {
     name      = var.role_binding_name
     namespace = var.namespace
+
     annotations = merge(
-      var.role_binding_annotations,
-      var.annotations
+      local.annotations,
+      var.annotations,
+      var.role_binding_annotations
     )
   }
+
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = var.role_binding_name
+    name      = element(concat(kubernetes_role.this.*.metadata.0.name, list("")), 0)
   }
+
   subject {
     kind      = "ServiceAccount"
-    name      = var.service_account_name
+    name      = element(concat(kubernetes_service_account.this.*.metadata.0.name, list("")), 0)
     namespace = var.namespace
-  }
-}
-
-resource "kubernetes_deployment" "this" {
-  metadata {
-    name      = var.deployment_name
-    namespace = var.namespace
-    annotations = merge(
-      var.deployment_annotations,
-      var.annotations,
-    )
-  }
-
-  spec {
-    replicas = 1
-    strategy {
-      type = "Recreate"
-    }
-
-    selector {
-      match_labels = {
-        app = var.deployment_name
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = var.deployment_name
-        }
-      }
-
-      spec {
-        service_account_name            = kubernetes_service_account.this.metadata[0].name
-        automount_service_account_token = true
-        container {
-          image = var.docker_image
-          name  = var.container_name
-
-          resources {
-            limits {
-              cpu    = var.cpu_max
-              memory = var.memory_max
-            }
-            requests {
-              cpu    = var.cpu_request
-              memory = var.memory_request
-            }
-          }
-
-          readiness_probe {
-            http_get {
-              path = "/login"
-              port = 8080
-            }
-            initial_delay_seconds = 90
-            timeout_seconds       = 5
-            success_threshold     = 1
-            failure_threshold     = 5
-          }
-
-          liveness_probe {
-            http_get {
-              path = "/login"
-              port = 8080
-            }
-            initial_delay_seconds = 180
-            timeout_seconds       = 5
-            success_threshold     = 1
-            failure_threshold     = 5
-          }
-
-          port {
-            container_port = 8080
-          }
-
-          port {
-            container_port = 50000
-          }
-
-          volume_mount {
-            mount_path = "/var/jenkins_home"
-            name       = "jenkins-data"
-          }
-        }
-        volume {
-          name = "jenkins-data"
-          persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "jenkins-ui" {
-  metadata {
-    name      = var.service_ui_name
-    namespace = var.namespace
-    annotations = merge(
-      var.service_ui_annotations,
-      var.annotations
-    )
-  }
-  spec {
-    selector = {
-      app = var.deployment_name
-    }
-    port {
-      port        = 8080
-      target_port = 8080
-      name        = "ui"
-      protocol    = "TCP"
-    }
-
-    type = "NodePort"
-  }
-}
-
-resource "kubernetes_service" "jenkins-discovery" {
-  metadata {
-    name      = var.service_discovery_name
-    namespace = var.namespace
-    annotations = merge(
-      var.service_discovery_annotations,
-      var.annotations
-    )
-  }
-  spec {
-    selector = {
-      app = var.deployment_name
-    }
-    port {
-      port        = 50000
-      target_port = 50000
-      name        = "slaves"
-      protocol    = "TCP"
-    }
-  }
-}
-
-resource "kubernetes_ingress" "this" {
-  metadata {
-    name      = var.ingress_name
-    namespace = var.namespace
-    labels = {
-      app = var.ingress_labels
-    }
-    annotations = merge(
-      var.ingress_annotations,
-      var.annotations
-    )
-  }
-
-  spec {
-    rule {
-      http {
-        dynamic "path" {
-          for_each = var.ingress_paths
-          content {
-            backend {
-              service_name = path.value["service_name"]
-              service_port = path.value["service_port"]
-            }
-          }
-        }
-      }
-    }
   }
 }

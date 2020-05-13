@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0
+* refactoring: (BREAKING) Complete rehaul of the module.
+
 ## 1.1.0
 
 * Feat: Add explicit dependancy on ingress

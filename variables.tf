@@ -1,161 +1,241 @@
-variable "namespace_creation" {
-  description = "Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613"
-  type        = bool
+#####
+# Global
+#####
+
+variable "enabled" {
+  description = "Whether or not to enable this module."
   default     = true
 }
 
+variable "namespace" {
+  description = "Name of the namespace in which to deploy the module."
+  default     = "default"
+}
+
 variable "annotations" {
-  description = "Annotations to be merged with all resources"
+  description = "Map of annotations that will be applied on all resources."
   default     = {}
 }
 
-variable "storage_class" {
-  description = "Name of the storage class to use for pvc"
-  type        = string
+variable "labels" {
+  description = "Map of labels that will be applied on all resources."
+  default     = {}
 }
 
-variable "storage_size" {
-  description = "Size of the persistent volume used to store jenkins data"
-  type        = string
+#####
+# Application
+#####
+
+variable "image" {
+  description = "Image to use."
+  default     = "fxinnovation/jenkins"
+}
+
+variable "image_version" {
+  description = "Version of the image to use."
+  default     = "3.37.0"
+}
+
+variable "resources_requests_cpu" {
+  description = "Amount of cpu time that the application requests."
+  default     = "1"
+}
+
+variable "resources_requests_memory" {
+  description = "Amount of memory that the application requests."
+  default     = "2048Mi"
+}
+
+variable "resources_limits_cpu" {
+  description = "Amount of cpu time that the application limits."
+  default     = "2"
+}
+
+variable "resources_limits_memory" {
+  description = "Amount of memory that the application limits."
+  default     = "4096Mi"
+}
+
+variable "jnlp_port" {
+  description = "Port that will be set on the kubernetes resources for the JNLP connection. *Still has to be managed in the application.*"
+  default     = 50000
+}
+
+#####
+# StatefulSet
+#####
+
+variable "stateful_set_name" {
+  description = "Name of the statefulset to deploy."
+  default     = "jenkins"
+}
+
+variable "stateful_set_annotations" {
+  description = "Map of annotations that will be applied on the statefulset."
+  default     = {}
+}
+
+variable "stateful_set_labels" {
+  description = "Map of labels that will be applied on the statefulset."
+  default     = {}
+}
+
+variable "stateful_set_template_annotations" {
+  description = "Map of annotations that will be applied on the statefulset template."
+  default     = {}
+}
+
+variable "stateful_set_template_labels" {
+  description = "Map of labels that will be applied on the statefulset template."
+  default     = {}
+}
+
+variable "stateful_set_volume_claim_template_enabled" {
+  description = "Whether or not to enable the volume claim template on the statefulset."
+  default     = true
+}
+
+variable "stateful_set_volume_claim_template_annotations" {
+  description = "Map of annotations that will be applied on the statefulset volume claim template."
+  default     = {}
+}
+
+variable "stateful_set_volume_claim_template_labels" {
+  description = "Map of labels that will be applied on the statefulset volume claim template."
+  default     = {}
+}
+
+variable "stateful_set_volume_claim_template_name" {
+  description = "Name of the statefulset's volume claim template."
+  default     = "jenkins"
+}
+
+variable "stateful_set_volume_claim_template_storage_class" {
+  description = "Storage class to use for the stateful set volume claim template."
+  default     = null
+}
+
+variable "stateful_set_volume_claim_template_requests_storage" {
+  description = "Size of storage the stateful set volume claim template requests."
+  default     = "200Gi"
+}
+
+#####
+# Service
+#####
+
+variable "service_name" {
+  description = "Name of the service."
+  default     = "jenkins"
+}
+
+variable "service_annotations" {
+  description = "Map of annotations that will be applied on the service."
+  default     = {}
+}
+
+variable "service_labels" {
+  description = "Map of labels that will be applied on the service."
+  default     = {}
+}
+
+#####
+# Ingress
+#####
+
+variable "ingress_enabled" {
+  description = "Whether or not to enable the ingress."
+  default     = true
+}
+
+variable "ingress_name" {
+  description = "Name of the ingress."
+  default     = "jenkins"
+}
+
+variable "ingress_annotations" {
+  description = "Map of annotations that will be applied on the ingress."
+  default     = {}
+}
+
+variable "ingress_labels" {
+  description = "Map of labels that will be applied on the ingress."
+  default     = {}
+}
+
+variable "ingress_host" {
+  description = "Host on which the ingress wil be available (ex: nexus.example.com)."
+  default     = "example.com"
+}
+
+variable "ingress_tls_enabled" {
+  description = "Whether or not TLS should be enabled on the ingress."
+  default     = true
+}
+
+variable "ingress_tls_secret_name" {
+  description = "Name of the secret to use to put TLS on the ingress."
+  default     = "jenkins"
+}
+
+#####
+# RBAC
+#####
+
+variable "role_additionnal_rules" {
+  description = "List of objects representing additionnal rules to add on the role. *All fields are required.*"
+  type = list(
+    object({
+      api_groups     = list(string) # List of api_groups to apply the verbs on
+      resources      = list(string) # List of resources to apply the verbs on
+      resource_names = list(string) # List of the resource names to apply the verbs on
+      verbs          = list(string) # List of verbs to apply
+    })
+  )
+  default = []
 }
 
 variable "role_name" {
-  description = "Name of the jenkins role"
-  type        = string
+  description = "Name of the role."
+  default     = "jenkins"
 }
 
 variable "role_annotations" {
-  description = "Annotations to be merged with jenkins role"
+  description = "Map of annotations that is merged on the role."
+  default     = {}
+}
+
+variable "role_labels" {
+  description = "Map of labels that is merged on the role."
+  default     = {}
+}
+
+variable "service_account_annotations" {
+  description = "Map of annotations that is merged on the service account."
+  default     = {}
+}
+
+variable "service_account_labels" {
+  description = "Map of labels that is merged on the service account."
   default     = {}
 }
 
 variable "service_account_name" {
   description = "Name of the service account that run jenkins"
-  type        = string
+  default     = "jenkins"
 }
 
-variable "service_account_annotations" {
-  description = "Annotations to be merged with jenkins service account"
+variable "role_binding_annotations" {
+  description = "Map of annotations that is merged on the role binding"
+  default     = {}
+}
+
+variable "role_binding_labels" {
+  description = "Map of labels that is merged on the role binding"
   default     = {}
 }
 
 variable "role_binding_name" {
   description = "Name of the role binding for jenkins"
-  type        = string
-}
-
-variable "role_binding_annotations" {
-  description = "Annotations to be merged with jenkins role binding"
-  default     = {}
-}
-
-variable "namespace" {
-  description = "Name of the namespace where jenkins is deployed"
-  default     = "default"
-}
-
-variable "role_rules" {
-  description = "List of maps of rules to dynamically add to jenkins role"
-  default     = []
-}
-
-variable "deployment_name" {
-  description = "Name of the jenkins deployment"
-  type        = string
-}
-
-variable "deployment_annotations" {
-  description = "Annotations to be merged with the jenkins deployment"
-  default     = {}
-}
-
-variable "claim_name" {
-  description = "Name of the persistent volume claim for jenkins"
-  type        = string
-}
-
-variable "claim_annotations" {
-  description = "Annotations to be merged with jenkins persistent claim"
-  default     = {}
-}
-
-variable "claim_wait_until_bound" {
-  description = "Wait volume claim creation until bound"
-  default     = true
-}
-
-variable "ingress_name" {
-  description = "Name of the ingress service for jenkins"
-  type        = string
-}
-
-variable "ingress_annotations" {
-  description = "Annotations to merged with ingress service"
-  default     = {}
-}
-
-variable "ingress_labels" {
-  description = "Labels applied to the ingress service"
   default     = "jenkins"
-}
-
-variable "container_name" {
-  description = "Name of the jenkins container"
-  type        = string
-}
-
-variable "service_discovery_name" {
-  description = "Name of the jenkins discovery service"
-  type        = string
-}
-
-variable "service_discovery_annotations" {
-  description = "Annotations to be merged with jenkins service discovery"
-  default     = {}
-}
-
-variable "service_ui_name" {
-  description = "Name of the jenkins ui service"
-  type        = string
-}
-
-variable "service_ui_annotations" {
-  description = "Annotations to be merged with jenkins ui service"
-  default     = {}
-}
-
-variable "cpu_max" {
-  description = "Maximum number of cpu that can be used by jenkins"
-  default     = "3"
-}
-
-variable "cpu_request" {
-  description = "Requested number of cpu for jenkins"
-  default     = "2"
-}
-
-variable "memory_max" {
-  description = "Maximum amount of ram that can be used by jenkins"
-  default     = "6144Mi"
-}
-
-variable "memory_request" {
-  description = "Requested amount of ram for jenkins"
-  default     = "4096Mi"
-}
-
-variable "docker_image" {
-  description = "Name of the docker image to use for jenkins"
-  default     = "fxinnovation/jenkins:3.33.0"
-}
-
-variable "ingress_paths" {
-  description = "Paths for jenkins ingress"
-  default     = { ui = { "service_name" = "jenkins-ui", "service_port" = "8080" } }
-}
-
-variable "ingress_depend_on" {
-  description = "Force dependency on ingress"
-  default     = []
-  type        = list(string)
 }

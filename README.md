@@ -3,58 +3,78 @@
 Terraform module to deploy jenkins on kubernetes
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| kubernetes | >= 1.10.0 |
+| random | >= 2.0.0 |
+
 ## Providers
 
 | Name | Version |
 |------|---------|
-| kubernetes | n/a |
+| kubernetes | >= 1.10.0 |
+| random | >= 2.0.0 |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
-| annotations | Annotations to be merged with all resources | `map` | `{}` | no |
-| claim\_annotations | Annotations to be merged with jenkins persistent claim | `map` | `{}` | no |
-| claim\_name | Name of the persistent volume claim for jenkins | `string` | n/a | yes |
-| claim\_wait\_until\_bound | Wait volume claim creation until bound | `bool` | `true` | no |
-| container\_name | Name of the jenkins container | `string` | n/a | yes |
-| cpu\_max | Maximum number of cpu that can be used by jenkins | `string` | `"3"` | no |
-| cpu\_request | Requested number of cpu for jenkins | `string` | `"2"` | no |
-| deployment\_annotations | Annotations to be merged with the jenkins deployment | `map` | `{}` | no |
-| deployment\_name | Name of the jenkins deployment | `string` | n/a | yes |
-| docker\_image | Name of the docker image to use for jenkins | `string` | `"fxinnovation/jenkins:3.33.0"` | no |
-| ingress\_annotations | Annotations to merged with ingress service | `map` | `{}` | no |
-| ingress\_depend\_on | Force dependency on ingress | `list(string)` | `[]` | no |
-| ingress\_labels | Labels applied to the ingress service | `string` | `"jenkins"` | no |
-| ingress\_name | Name of the ingress service for jenkins | `string` | n/a | yes |
-| ingress\_paths | Paths for jenkins ingress | `map` | <pre>{<br>  "ui": {<br>    "service_name": "jenkins-ui",<br>    "service_port": "8080"<br>  }<br>}</pre> | no |
-| memory\_max | Maximum amount of ram that can be used by jenkins | `string` | `"6144Mi"` | no |
-| memory\_request | Requested amount of ram for jenkins | `string` | `"4096Mi"` | no |
-| namespace | Name of the namespace where jenkins is deployed | `string` | `"default"` | no |
-| namespace\_creation | Create the namespace. This is mandatory will this PR isn't merged https://github.com/terraform-providers/terraform-provider-kubernetes/issues/613 | `bool` | `true` | no |
-| role\_annotations | Annotations to be merged with jenkins role | `map` | `{}` | no |
-| role\_binding\_annotations | Annotations to be merged with jenkins role binding | `map` | `{}` | no |
-| role\_binding\_name | Name of the role binding for jenkins | `string` | n/a | yes |
-| role\_name | Name of the jenkins role | `string` | n/a | yes |
-| role\_rules | List of maps of rules to dynamically add to jenkins role | `list` | `[]` | no |
-| service\_account\_annotations | Annotations to be merged with jenkins service account | `map` | `{}` | no |
-| service\_account\_name | Name of the service account that run jenkins | `string` | n/a | yes |
-| service\_discovery\_annotations | Annotations to be merged with jenkins service discovery | `map` | `{}` | no |
-| service\_discovery\_name | Name of the jenkins discovery service | `string` | n/a | yes |
-| service\_ui\_annotations | Annotations to be merged with jenkins ui service | `map` | `{}` | no |
-| service\_ui\_name | Name of the jenkins ui service | `string` | n/a | yes |
-| storage\_class | Name of the storage class to use for pvc | `string` | n/a | yes |
-| storage\_size | Size of the persistent volume used to store jenkins data | `string` | n/a | yes |
+|------|-------------|------|---------|:--------:|
+| annotations | Map of annotations that will be applied on all resources. | `map` | `{}` | no |
+| enabled | Whether or not to enable this module. | `bool` | `true` | no |
+| image | Image to use. | `string` | `"fxinnovation/jenkins"` | no |
+| image\_version | Version of the image to use. | `string` | `"3.37.0"` | no |
+| ingress\_annotations | Map of annotations that will be applied on the ingress. | `map` | `{}` | no |
+| ingress\_enabled | Whether or not to enable the ingress. | `bool` | `true` | no |
+| ingress\_host | Host on which the ingress wil be available (ex: nexus.example.com). | `string` | `"example.com"` | no |
+| ingress\_labels | Map of labels that will be applied on the ingress. | `map` | `{}` | no |
+| ingress\_name | Name of the ingress. | `string` | `"jenkins"` | no |
+| ingress\_tls\_enabled | Whether or not TLS should be enabled on the ingress. | `bool` | `true` | no |
+| ingress\_tls\_secret\_name | Name of the secret to use to put TLS on the ingress. | `string` | `"jenkins"` | no |
+| jnlp\_port | Port that will be set on the kubernetes resources for the JNLP connection. \*Still has to be managed in the application.\* | `number` | `50000` | no |
+| labels | Map of labels that will be applied on all resources. | `map` | `{}` | no |
+| namespace | Name of the namespace in which to deploy the module. | `string` | `"default"` | no |
+| resources\_limits\_cpu | Amount of cpu time that the application limits. | `string` | `"2"` | no |
+| resources\_limits\_memory | Amount of memory that the application limits. | `string` | `"4096Mi"` | no |
+| resources\_requests\_cpu | Amount of cpu time that the application requests. | `string` | `"1"` | no |
+| resources\_requests\_memory | Amount of memory that the application requests. | `string` | `"2048Mi"` | no |
+| role\_additionnal\_rules | List of objects representing additionnal rules to add on the role. \*All fields are required.\* | <pre>list(<br>    object({<br>      api_groups     = list(string) # List of api_groups to apply the verbs on<br>      resources      = list(string) # List of resources to apply the verbs on<br>      resource_names = list(string) # List of the resource names to apply the verbs on<br>      verbs          = list(string) # List of verbs to apply<br>    })<br>  )</pre> | `[]` | no |
+| role\_annotations | Map of annotations that is merged on the role. | `map` | `{}` | no |
+| role\_binding\_annotations | Map of annotations that is merged on the role binding | `map` | `{}` | no |
+| role\_binding\_labels | Map of labels that is merged on the role binding | `map` | `{}` | no |
+| role\_binding\_name | Name of the role binding for jenkins | `string` | `"jenkins"` | no |
+| role\_labels | Map of labels that is merged on the role. | `map` | `{}` | no |
+| role\_name | Name of the role. | `string` | `"jenkins"` | no |
+| service\_account\_annotations | Map of annotations that is merged on the service account. | `map` | `{}` | no |
+| service\_account\_labels | Map of labels that is merged on the service account. | `map` | `{}` | no |
+| service\_account\_name | Name of the service account that run jenkins | `string` | `"jenkins"` | no |
+| service\_annotations | Map of annotations that will be applied on the service. | `map` | `{}` | no |
+| service\_labels | Map of labels that will be applied on the service. | `map` | `{}` | no |
+| service\_name | Name of the service. | `string` | `"jenkins"` | no |
+| stateful\_set\_annotations | Map of annotations that will be applied on the statefulset. | `map` | `{}` | no |
+| stateful\_set\_labels | Map of labels that will be applied on the statefulset. | `map` | `{}` | no |
+| stateful\_set\_name | Name of the statefulset to deploy. | `string` | `"jenkins"` | no |
+| stateful\_set\_template\_annotations | Map of annotations that will be applied on the statefulset template. | `map` | `{}` | no |
+| stateful\_set\_template\_labels | Map of labels that will be applied on the statefulset template. | `map` | `{}` | no |
+| stateful\_set\_volume\_claim\_template\_annotations | Map of annotations that will be applied on the statefulset volume claim template. | `map` | `{}` | no |
+| stateful\_set\_volume\_claim\_template\_enabled | Whether or not to enable the volume claim template on the statefulset. | `bool` | `true` | no |
+| stateful\_set\_volume\_claim\_template\_labels | Map of labels that will be applied on the statefulset volume claim template. | `map` | `{}` | no |
+| stateful\_set\_volume\_claim\_template\_name | Name of the statefulset's volume claim template. | `string` | `"jenkins"` | no |
+| stateful\_set\_volume\_claim\_template\_requests\_storage | Size of storage the stateful set volume claim template requests. | `string` | `"200Gi"` | no |
+| stateful\_set\_volume\_claim\_template\_storage\_class | Storage class to use for the stateful set volume claim template. | `any` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| service\_discovery\_id | n/a |
-| service\_discovery\_port | n/a |
-| service\_ingress\_addr | n/a |
-| service\_ui\_id | n/a |
-| service\_ui\_node\_port | n/a |
-| service\_ui\_port | n/a |
+| ingress | n/a |
+| namespace\_name | n/a |
+| role | n/a |
+| role\_binding | n/a |
+| service | n/a |
+| service\_account | n/a |
+| statefulset | n/a |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
