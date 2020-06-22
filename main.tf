@@ -134,7 +134,7 @@ resource "kubernetes_stateful_set" "this" {
 
           readiness_probe {
             http_get {
-              path   = "/"
+              path   = "/login"
               port   = local.port
               scheme = "HTTP"
             }
@@ -148,7 +148,7 @@ resource "kubernetes_stateful_set" "this" {
 
           liveness_probe {
             http_get {
-              path   = "/"
+              path   = "/login"
               port   = local.port
               scheme = "HTTP"
             }

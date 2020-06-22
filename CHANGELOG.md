@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1
+* fix: Fix healthcheck path
+
 ## 2.0.0
 * refactoring: (BREAKING) Complete rehaul of the module.
 
