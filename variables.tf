@@ -33,7 +33,7 @@ variable "image" {
 
 variable "image_version" {
   description = "Version of the image to use."
-  default     = "3.37.0"
+  default     = "3.38.0"
 }
 
 variable "resources_requests_cpu" {
