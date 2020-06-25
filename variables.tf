@@ -75,6 +75,11 @@ variable "stateful_set_annotations" {
   default     = {}
 }
 
+variable "stateful_set_automount_service_account_token" {
+  description = "Whether or not to mount the service account token in the pods."
+  default     = true
+}
+
 variable "stateful_set_labels" {
   description = "Map of labels that will be applied on the statefulset."
   default     = {}

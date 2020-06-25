@@ -87,6 +87,8 @@ resource "kubernetes_stateful_set" "this" {
       }
 
       spec {
+        automount_service_account_token = var.stateful_set_automount_service_account_token
+
         dynamic "init_container" {
           for_each = var.stateful_set_volume_claim_template_enabled ? [1] : []
 

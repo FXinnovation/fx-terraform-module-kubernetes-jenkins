@@ -54,6 +54,7 @@ Terraform module to deploy jenkins on kubernetes
 | service\_labels | Map of labels that will be applied on the service. | `map` | `{}` | no |
 | service\_name | Name of the service. | `string` | `"jenkins"` | no |
 | stateful\_set\_annotations | Map of annotations that will be applied on the statefulset. | `map` | `{}` | no |
+| stateful\_set\_automount\_service\_account\_token | Whether or not to mount the service account token in the pods. | `bool` | `true` | no |
 | stateful\_set\_labels | Map of labels that will be applied on the statefulset. | `map` | `{}` | no |
 | stateful\_set\_name | Name of the statefulset to deploy. | `string` | `"jenkins"` | no |
 | stateful\_set\_template\_annotations | Map of annotations that will be applied on the statefulset template. | `map` | `{}` | no |
