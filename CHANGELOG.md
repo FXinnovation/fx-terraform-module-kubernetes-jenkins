@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0
+
+* feat: Add possibility to mount the service account token in the pod.
+* fix: Link service account to pod template
+
 ## 2.1.0
 
 * maintenance: Set default version of the docker image to 3.38.0
