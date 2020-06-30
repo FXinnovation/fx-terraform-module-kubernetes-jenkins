@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.0
+
+* feat: Add additional ingress path
+* chore: bump pre-commit-terraform to 1.31.0
+
 ## 2.2.0
 
 * feat: Add possibility to mount the service account token in the pod.
