@@ -45,7 +45,7 @@ module "this" {
 
   additionnal_ingress_paths = [
     {
-      service_name = "foo_service"
+      service_name = "foo-service"
       service_port = "http"
       path         = "/"
     }
