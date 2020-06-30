@@ -304,6 +304,16 @@ resource "kubernetes_ingress" "this" {
           }
           path = "/"
         }
+        dynamic "path" {
+          for_each = var.additionnal_ingress_paths
+          content {
+            backend {
+              service_name = lookup(path.value, "service_name", element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0))
+              service_port = lookup(path.value, "service_port", "http")
+            }
+            path = lookup(path.value, "path", null)
+          }
+        }
       }
     }
 

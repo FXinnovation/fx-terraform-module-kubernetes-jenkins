@@ -42,4 +42,12 @@ module "this" {
   namespace = kubernetes_namespace.this.metadata.0.name
 
   stateful_set_volume_claim_template_enabled = false
+
+  additionnal_ingress_paths = [
+    {
+      service_name = "foo_service"
+      service_port = "http"
+      path         = "/"
+    }
+  ]
 }

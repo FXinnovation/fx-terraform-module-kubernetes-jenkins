@@ -183,6 +183,19 @@ variable "ingress_tls_secret_name" {
   default     = "jenkins"
 }
 
+variable "additionnal_ingress_paths" {
+  description = <<-DOCUMENTATION
+A list of map of additionnal ingress path to add. Map must support the following structure:
+  * service_name (optional, string): The name of the kubernates service. (e.g. ssl-redirect)
+  * service_port (optional, string): The service port number (e.g. use-annotation).
+  * path (optional, string): The path to the service
+
+For example, see folder examples/XXXXX.
+DOCUMENTATION
+  type        = any
+  default     = []
+}
+
 #####
 # RBAC
 #####
