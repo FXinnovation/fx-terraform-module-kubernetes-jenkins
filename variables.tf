@@ -190,9 +190,9 @@ A list of map of additionnal ingress path to add. Map must support the following
   * service_port (optional, string): The service port number (e.g. use-annotation).
   * path (optional, string): The path to the service
 
-For example, see folder examples/XXXXX.
+For example, see folder examples/without-pvc.
 DOCUMENTATION
-  type        = any
+  type        = list
   default     = []
 }
 

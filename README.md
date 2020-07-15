@@ -22,7 +22,7 @@ Terraform module to deploy jenkins on kubernetes
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| additionnal\_ingress\_paths | A list of map of additionnal ingress path to add. Map must support the following structure:<br>  * service\_name (optional, string): The name of the kubernates service. (e.g. ssl-redirect)<br>  * service\_port (optional, string): The service port number (e.g. use-annotation).<br>  * path (optional, string): The path to the service<br><br>For example, see folder examples/XXXXX. | `any` | `[]` | no |
+| additionnal\_ingress\_paths | A list of map of additionnal ingress path to add. Map must support the following structure:<br>  * service\_name (optional, string): The name of the kubernates service. (e.g. ssl-redirect)<br>  * service\_port (optional, string): The service port number (e.g. use-annotation).<br>  * path (optional, string): The path to the service<br><br>For example, see folder examples/without-pvc. | `list` | `[]` | no |
 | annotations | Map of annotations that will be applied on all resources. | `map` | `{}` | no |
 | enabled | Whether or not to enable this module. | `bool` | `true` | no |
 | image | Image to use. | `string` | `"fxinnovation/jenkins"` | no |

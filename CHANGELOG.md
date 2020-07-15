@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.1
+* fix: Update variable type and description of additionnal ingress paths
+
 ## 2.3.0
 
 * feat: Add additional ingress path
