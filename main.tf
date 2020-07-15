@@ -211,6 +211,15 @@ resource "kubernetes_stateful_set" "this" {
       }
     }
   }
+
+  # NOTE: This is needed because while documentation suggests that all labels can be changed, it seems that on VolumeClaimTemplates it is not possible to change them.
+  # I create https://github.com/kubernetes/kubernetes/issues/93115 for this specific problem.
+  lifecycle {
+    ignore_changes = [
+      spec[0].volume_claim_template[0].metadata[0].labels,
+      spec[0].volume_claim_template[0].metadata[0].annotations,
+    ]
+  }
 }
 
 #####

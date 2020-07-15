@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2.3.1
+* fix: Add ignore on update lifecycle on volume claim templates
 * fix: Update variable type and description of additionnal ingress paths
 
 ## 2.3.0
