@@ -91,7 +91,7 @@ resource "kubernetes_stateful_set" "this" {
         service_account_name            = element(concat(kubernetes_service_account.this.*.metadata.0.name, list("")), 0)
 
         dynamic "init_container" {
-          for_each = var.stateful_set_volume_claim_template_enabled ? [1] : []
+          for_each = var.stateful_set_volume_claim_template_enabled && var.stateful_set_init_container_enabled ? [1] : []
 
           content {
             name              = "init-chown-data"

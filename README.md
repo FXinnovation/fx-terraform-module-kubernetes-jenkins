@@ -56,6 +56,7 @@ Terraform module to deploy jenkins on kubernetes
 | service\_name | Name of the service. | `string` | `"jenkins"` | no |
 | stateful\_set\_annotations | Map of annotations that will be applied on the statefulset. | `map` | `{}` | no |
 | stateful\_set\_automount\_service\_account\_token | Whether or not to mount the service account token in the pods. | `bool` | `true` | no |
+| stateful\_set\_init\_container\_enabled | Whether or not to use the init-container or not. The init container is used to chown the data, which is safer, but on bigger Jenkins's this can take a while. | `bool` | `true` | no |
 | stateful\_set\_labels | Map of labels that will be applied on the statefulset. | `map` | `{}` | no |
 | stateful\_set\_name | Name of the statefulset to deploy. | `string` | `"jenkins"` | no |
 | stateful\_set\_template\_annotations | Map of annotations that will be applied on the statefulset template. | `map` | `{}` | no |

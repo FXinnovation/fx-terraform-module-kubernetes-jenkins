@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0
+
+* feat: Add variable to disable init-container
+
 ## 2.3.1
 * fix: Add ignore on update lifecycle on volume claim templates
 * fix: Update variable type and description of additionnal ingress paths

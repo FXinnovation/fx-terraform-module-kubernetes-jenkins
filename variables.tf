@@ -125,6 +125,11 @@ variable "stateful_set_volume_claim_template_requests_storage" {
   default     = "200Gi"
 }
 
+variable "stateful_set_init_container_enabled" {
+  description = "Whether or not to use the init-container or not. The init container is used to chown the data, which is safer, but on bigger Jenkins's this can take a while."
+  default     = true
+}
+
 #####
 # Service
 #####
