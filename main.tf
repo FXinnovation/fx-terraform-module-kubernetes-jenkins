@@ -113,11 +113,11 @@ resource "kubernetes_stateful_set" "this" {
           image_pull_policy = "IfNotPresent"
 
           resources {
-            requests {
+            requests = {
               cpu    = var.resources_requests_cpu
               memory = var.resources_requests_memory
             }
-            limits {
+            limits = {
               cpu    = var.resources_limits_cpu
               memory = var.resources_limits_memory
             }
