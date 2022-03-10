@@ -11,7 +11,7 @@ output "namespace_name" {
 #####
 
 output "statefulset" {
-  value = element(concat(kubernetes_stateful_set.this.*, list({})), 0)
+  value = element(concat(kubernetes_stateful_set.this.*, []), 0)
 }
 
 #####
@@ -19,7 +19,7 @@ output "statefulset" {
 #####
 
 output "service" {
-  value = element(concat(kubernetes_service.this.*, list({})), 0)
+  value = element(concat(kubernetes_service.this.*, []), 0)
 }
 
 #####
@@ -27,7 +27,7 @@ output "service" {
 #####
 
 output "ingress" {
-  value = element(concat(kubernetes_ingress.this.*, list({})), 0)
+  value = element(concat(kubernetes_ingress.this.*, []), 0)
 }
 
 #####
@@ -35,13 +35,13 @@ output "ingress" {
 #####
 
 output "service_account" {
-  value = element(concat(kubernetes_service_account.this.*, list({})), 0)
+  value = element(concat(kubernetes_service_account.this.*, []), 0)
 }
 
 output "role" {
-  value = element(concat(kubernetes_role.this.*, list({})), 0)
+  value = element(concat(kubernetes_role.this.*, []), 0)
 }
 
 output "role_binding" {
-  value = element(concat(kubernetes_role_binding.this.*, list({})), 0)
+  value = element(concat(kubernetes_role_binding.this.*, []), 0)
 }

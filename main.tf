@@ -55,7 +55,7 @@ resource "kubernetes_stateful_set" "this" {
 
   spec {
     replicas     = 1
-    service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+    service_name = element(concat(kubernetes_service.this.*.metadata.0.name, []), 0)
 
     update_strategy {
       type = "RollingUpdate"
@@ -63,7 +63,7 @@ resource "kubernetes_stateful_set" "this" {
 
     selector {
       match_labels = {
-        selector = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+        selector = "jenkins-${element(concat(random_string.selector.*.result, []), 0)}"
       }
     }
 
@@ -78,7 +78,7 @@ resource "kubernetes_stateful_set" "this" {
           {
             instance  = var.stateful_set_name
             component = "application"
-            selector  = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+            selector  = "jenkins-${element(concat(random_string.selector.*.result, []), 0)}"
           },
           local.labels,
           var.labels,
@@ -88,7 +88,7 @@ resource "kubernetes_stateful_set" "this" {
 
       spec {
         automount_service_account_token = var.stateful_set_automount_service_account_token
-        service_account_name            = element(concat(kubernetes_service_account.this.*.metadata.0.name, list("")), 0)
+        service_account_name            = element(concat(kubernetes_service_account.this.*.metadata.0.name, []), 0)
 
         dynamic "init_container" {
           for_each = var.stateful_set_volume_claim_template_enabled && var.stateful_set_init_container_enabled ? [1] : []
@@ -250,7 +250,7 @@ resource "kubernetes_service" "this" {
 
   spec {
     selector = {
-      selector = "jenkins-${element(concat(random_string.selector.*.result, list("")), 0)}"
+      selector = "jenkins-${element(concat(random_string.selector.*.result, []), 0)}"
     }
 
     type = "ClusterIP"
@@ -299,7 +299,7 @@ resource "kubernetes_ingress" "this" {
 
   spec {
     backend {
-      service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+      service_name = element(concat(kubernetes_service.this.*.metadata.0.name, []), 0)
       service_port = "http"
     }
 
@@ -308,7 +308,7 @@ resource "kubernetes_ingress" "this" {
       http {
         path {
           backend {
-            service_name = element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0)
+            service_name = element(concat(kubernetes_service.this.*.metadata.0.name, []), 0)
             service_port = "http"
           }
           path = "/"
@@ -319,7 +319,7 @@ resource "kubernetes_ingress" "this" {
 
           content {
             backend {
-              service_name = lookup(path.value, "service_name", element(concat(kubernetes_service.this.*.metadata.0.name, list("")), 0))
+              service_name = lookup(path.value, "service_name", element(concat(kubernetes_service.this.*.metadata.0.name, []), 0))
               service_port = lookup(path.value, "service_port", "http")
             }
 
@@ -437,12 +437,12 @@ resource "kubernetes_role_binding" "this" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = element(concat(kubernetes_role.this.*.metadata.0.name, list("")), 0)
+    name      = element(concat(kubernetes_role.this.*.metadata.0.name, []), 0)
   }
 
   subject {
     kind      = "ServiceAccount"
-    name      = element(concat(kubernetes_service_account.this.*.metadata.0.name, list("")), 0)
+    name      = element(concat(kubernetes_service_account.this.*.metadata.0.name, []), 0)
     namespace = var.namespace
   }
 }

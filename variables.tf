@@ -197,7 +197,7 @@ A list of map of additionnal ingress path to add. Map must support the following
 
 For example, see folder examples/without-pvc.
 DOCUMENTATION
-  type        = list
+  type        = list(any)
   default     = []
 }
 
