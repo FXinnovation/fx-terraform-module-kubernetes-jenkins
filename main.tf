@@ -415,7 +415,7 @@ resource "kubernetes_service_account" "this" {
     labels = merge(
       local.labels,
       var.labels,
-      var.service_account_annotations
+      var.service_account_labels
     )
   }
 }
