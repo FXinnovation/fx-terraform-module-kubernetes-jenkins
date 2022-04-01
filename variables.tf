@@ -149,6 +149,12 @@ variable "service_labels" {
   default     = {}
 }
 
+variable "service_type" {
+  description = "Type of service to create."
+  type        = string
+  default     = "ClusterIP"
+}
+
 #####
 # Ingress
 #####

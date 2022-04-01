@@ -70,6 +70,7 @@ No modules.
 | <a name="input_service_annotations"></a> [service\_annotations](#input\_service\_annotations) | Map of annotations that will be applied on the service. | `map` | `{}` | no |
 | <a name="input_service_labels"></a> [service\_labels](#input\_service\_labels) | Map of labels that will be applied on the service. | `map` | `{}` | no |
 | <a name="input_service_name"></a> [service\_name](#input\_service\_name) | Name of the service. | `string` | `"jenkins"` | no |
+| <a name="input_service_type"></a> [service\_type](#input\_service\_type) | Type of service to create. | `string` | `"ClusterIP"` | no |
 | <a name="input_stateful_set_annotations"></a> [stateful\_set\_annotations](#input\_stateful\_set\_annotations) | Map of annotations that will be applied on the statefulset. | `map` | `{}` | no |
 | <a name="input_stateful_set_automount_service_account_token"></a> [stateful\_set\_automount\_service\_account\_token](#input\_stateful\_set\_automount\_service\_account\_token) | Whether or not to mount the service account token in the pods. | `bool` | `true` | no |
 | <a name="input_stateful_set_init_container_enabled"></a> [stateful\_set\_init\_container\_enabled](#input\_stateful\_set\_init\_container\_enabled) | Whether or not to use the init-container or not. The init container is used to chown the data, which is safer, but on bigger Jenkins's this can take a while. | `bool` | `true` | no |
