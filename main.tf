@@ -253,7 +253,7 @@ resource "kubernetes_service" "this" {
       selector = "jenkins-${element(concat(random_string.selector.*.result, []), 0)}"
     }
 
-    type = "ClusterIP"
+    type = var.service_type
 
     port {
       port        = local.service_port

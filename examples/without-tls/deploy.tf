@@ -2,13 +2,10 @@
 # Providers
 #####
 
-provider "random" {
-  version = "~> 2"
-}
+provider "random" {}
 
 provider "kubernetes" {
-  version          = "1.10.0"
-  load_config_file = true
+  config_path = "~/.kube/config"
 }
 
 #####
@@ -42,4 +39,7 @@ module "this" {
   namespace = kubernetes_namespace.this.metadata.0.name
 
   ingress_tls_enabled = false
+  annotations = {
+    environment = random_string.this.result
+  }
 }

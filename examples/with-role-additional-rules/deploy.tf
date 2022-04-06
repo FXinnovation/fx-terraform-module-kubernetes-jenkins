@@ -2,13 +2,10 @@
 # Providers
 #####
 
-provider "random" {
-  version = "~> 2"
-}
+provider "random" {}
 
 provider "kubernetes" {
-  version          = "1.10.0"
-  load_config_file = true
+  config_path = "~/.kube/config"
 }
 
 #####
@@ -49,4 +46,7 @@ module "this" {
       verbs          = ["get"]
     }
   ]
+  annotations = {
+    environment = random_string.this.result
+  }
 }
