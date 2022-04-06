@@ -91,9 +91,4 @@ No modules.
 |------|-------------|
 | <a name="output_ingress"></a> [ingress](#output\_ingress) | n/a |
 | <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | n/a |
-| <a name="output_role"></a> [role](#output\_role) | n/a |
-| <a name="output_role_binding"></a> [role\_binding](#output\_role\_binding) | n/a |
-| <a name="output_service"></a> [service](#output\_service) | n/a |
-| <a name="output_service_account"></a> [service\_account](#output\_service\_account) | n/a |
-| <a name="output_statefulset"></a> [statefulset](#output\_statefulset) | n/a |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
